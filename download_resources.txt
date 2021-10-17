@@ -1,0 +1,16 @@
+1. Downloading the train and test datasets
+
+Currently the datasets are not available publicly.
+
+
+2. Downloading the trained models
+
+cd trained_models
+bash download_trained_models.sh
+
+note that there is an associated file with the trained autoencoder containing the thresholds dictionary used in selecting per-pixel stain.
+Use this dictionary in src_postprocess/seg_argmax_sup_ae.py when using the provided trained model.
+
+ 
+
+

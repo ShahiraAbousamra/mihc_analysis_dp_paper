@@ -1,0 +1,11 @@
+1. use src_ensemble/combine_pred.py to combine the colorAE and colorUNet predictions
+It generates numpy of predictions, each stain channel separately
+It also visualizes the combined predictions
+The different combinations are: 
+intersection of both models predictions, 
+union of both models predictions, 
+union anchor unet (wherever a stain is detected by the UNet model, take the union of both models predictions)
+union anchor ae (wherever a stain is detected by the autoencoder model, take the union of both models predictions)
+
+In the file main, set the input paths (images and both models predictions) and  output paths (predictions and visualizations)
+

@@ -1,0 +1,4 @@
+1. use src_eval/stats_dot_circles.py to create fscore using dilated annotation dots
+
+In the file main, set the input paths (images, labels, and predictions) and  output path.
+

@@ -1,0 +1,67 @@
+1. Use src_read_data_labels\extract_patches_shahira_reg.py to extract patches and generate superpixel labels.
+ 
+	Need to modify: paths, stains values and counts, how source data points are read, downsampling, patch size. 
+
+2. Add the stains vectors dictionary to the file:
+ 
+	NNFramework_PyTorch/sa_networks/multiplex_autoencoder_fixed_stains_arch3_next3.py
+
+3. Make a copy of the training configuration file:
+	NNFramework_PyTorch/config_multiplex_ae1.0_train/config_multiplex-ae_rgb2stains_simple-w-mp3_nocrop_dots_wsi2_noscale.ini
+
+and modify the following variables:
+
+	model_path: the output path. Make sure this path exists.
+
+	model_base_filename: prefix name used in output files
+
+	model_restore_filename: if continuing training set path to previous checkpoint, otherwise comment out
+
+	n_stains: number of stains (including background)
+
+	stain_init_name: the name of the stain dictionary defined in step 2. 
+
+	input_img_height, input_img_width: image width and height that the input patch will be scaled to (modify in train and validate config). 
+
+	pad_y, pad_x: padding required so that output is same size as input (modify in train and validate config). 
+
+	filepath_data = filepath_label = location of training/validation data.
+
+	max_epochs: number of training epochs
+
+	batch_size: batch size per iteration. ( Decrease if get cuda out of memory error).
+
+	learning_rate: optimizer learning rate
+	
+3. Run the training:
+cd NNFramework_Pytorch_external_call
+
+CUDA_VISIBLE_DEVICES='7' nohup  python ./external_test.py <config file path> 0 &
+
+Tip: The output log files from training show the training and validation losses every epoch. 
+While training, if the model starts to diverge (i.e. training loss increase), stop the training and either decrease the learning rate or use the epoch with the lowest validation loss so far.
+Trained model avg training loss = 0.113942, avg validation loss = 0.144715
+
+4. For test, make a copy of the test configuration file:
+	NNFramework_PyTorch/config_multiplex_ae1.0_test/config_multiplex-ae_rgb2stains_simple-w-mp3_nocrop_wsi2_noscale_19patches.ini
+
+and modify the variables in the sections: [DEFAULT] and [NETWORK] as in training, in addition to:
+ [TEST_DATA] pad_y, pad_x:
+ 
+ [TESTER] out_dir: make sure this directory exists
+
+run similar to step 3.
+
+5. To select thresholds for the stains, can use the file src_postprocess/vis_different_thresholds.py. 
+It visualizes different threshold values to allow to make manual selection. Will need to change stain related information and directories in the script main.
+In the file main, set the images directory, prediction numpy directory, and output directory.
+
+6. To generate argmax segmentation:
+use the file seg_argmax_sup_ae.py
+modify the thresh_dict (concentration threshold) and the size_thresh_dict (size threshold)
+In the file main, set the input and  output paths
+Note that there are parameters to add a slight dilation to the output and to get rid of small specks (small components in the prediction whose size less than definition in size_thresh_dict) and filling components.
+
+7. To visualize segmentations:
+use the file vis_seg.py
+In the file main, set the input and  output paths
